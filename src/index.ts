@@ -1,13 +1,15 @@
 #!/usr/bin/env node
+import logger from './logMessages';
+import { generateTypes } from './generateTypes';
 
 const yaml = require('js-yaml');
 const fs = require('fs');
 const yargs = require('yargs');
 const path = require('path');
 const mkdirp = require('mkdirp');
-const chalk = require('chalk');
 
 const rootDir = path.resolve('.');
+
 const options = yargs.usage('Usage: -c <config>').option('c', {
   alias: 'config',
   describe: 'Path of config file',
@@ -17,23 +19,26 @@ const options = yargs.usage('Usage: -c <config>').option('c', {
 
 const configPath = `${rootDir}/${options.config}`;
 
-const error = chalk.bold.red;
-const success = chalk.bold.green;
-const warning = chalk.bold.orange;
-
 fs.access(configPath, fs.F_OK, (err: any) => {
   if (err) {
-    console.log(error(`Config file does not exist at ${configPath}`));
+    logger.error(`Config file does not exist at ${configPath}`);
     return;
   }
   run();
 });
 
-const writeFile = async (dir: any, file: string, content: string) => {
+const writeFile = async (
+  dir: any,
+  file: string,
+  content: string,
+  exportTS = false
+) => {
   await mkdirp(dir);
-  const fileName = `${dir}/${file}.js`;
+  const fileExt = exportTS ? `ts` : `js`;
+  const fileName = `${dir}/${file}.${fileExt}`;
+
   fs.writeFileSync(fileName, content);
-  console.log(success(`Succesfully written to ${fileName}`));
+  logger.success(`Succesfully written copy object to ${fileName}`);
 };
 
 const convertDirectoriesToArray = (
@@ -43,30 +48,31 @@ const convertDirectoriesToArray = (
 const run = async () => {
   const configObj = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'));
   const copyDirectories = configObj.copyDirectories;
+  const exportTS = configObj.exportTS;
 
   let outputDir = configObj.ouptutDirectory;
   if (!outputDir) {
-    console.log(
-      warning('No ouput directory sepecified in config. Defaulting to /copy')
+    logger.warning(
+      'No ouput directory sepecified in config. Defaulting to /copy'
     );
+
     outputDir = `${rootDir}/copy`;
   }
   if (!copyDirectories) {
-    console.log(error('No copy directories sepecified in config. Please add'));
+    logger.error('No copy directories sepecified in config. Please add');
     process.exit(1);
   }
 
   try {
-    convertDirectoriesToArray(copyDirectories).forEach(dir => {
+    convertDirectoriesToArray(copyDirectories).forEach((dir, index) => {
       let output = {};
       const directory = dir.path;
       fs.readdir(directory, (err: any, files: any[]) => {
         if (err) {
-          console.log(
-            error(
-              `Sorry! Couldn't read files from ${directory}, make sure that you have specified the path correctly in config`
-            )
+          logger.error(
+            `Sorry! Couldn't read files from ${directory}, make sure that you have specified the path correctly in config`
           );
+
           process.exit(1);
         }
 
@@ -78,16 +84,21 @@ const run = async () => {
           const newObject = { [prefix]: yamlData };
           output = { ...output, ...newObject };
         });
-        const exportedObject = `export default ${JSON.stringify(
+        const exportedObject = `const copyStrings = ${JSON.stringify(
           output,
           null,
           4
-        )}`;
+        )}
+        export default copyStrings`;
 
-        writeFile(outputDir, dir.file, exportedObject);
+        writeFile(outputDir, dir.file, exportedObject, exportTS);
+
+        if (exportTS && index === 0) {
+          generateTypes(outputDir, output);
+        }
       });
     });
   } catch (e) {
-    console.log(error(e));
+    logger.error(e);
   }
 };
