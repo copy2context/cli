@@ -1,0 +1,52 @@
+{
+  "name": "copy2context",
+  "version": "1.0.0",
+  "description": "React Package for taking yaml files and giving you some react hooks and a context provider",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaac-martin/copy2context.git"
+  },
+  "author": "Isaac Martin",
+  "bugs": {
+    "url": "https://github.com/isaac-martin/copy2context/issues"
+  },
+  "homepage": "https://github.com/isaac-martin/copy2context#readme",
+  "module": "dist/cli.esm.js",
+  "devDependencies": {
+    "@types/jest": "^24.0.25",
+    "husky": "^3.1.0",
+    "tsdx": "^0.12.0",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.4"
+  },
+  "dependencies": {
+    "js-yaml": "^3.13.1",
+    "mkdirp": "~0.5.1",
+    "yargs": "^14.2.0"
+  }
+}
