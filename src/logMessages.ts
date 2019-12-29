@@ -1,19 +1,19 @@
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 const error = chalk.bold.red;
 const success = chalk.bold.green;
-const warning = chalk.bold.orange;
+const warning = chalk.bold.yellow;
 
 const logger = {
-  error: (msg: String) => {
-    console.log(error(msg));
+  error: (err: string) => {
+    console.log(error(err));
   },
 
-  success: (msg: String) => {
+  success: (msg: string) => {
     console.log(success(msg));
   },
 
-  warning: (msg: String) => {
+  warning: (msg: string) => {
     console.log(warning(msg));
   },
 };
