@@ -20,7 +20,7 @@ const options = yargs.usage('Usage: -c <config>').option('c', {
 
 const configPath = `${rootDir}/${options.config}`;
 
-fs.access(configPath, fs.F_OK, (err: any) => {
+fs.access(configPath, fs.F_OK, (err: string) => {
   if (err) {
     logger.error(`Config file does not exist at ${configPath}`);
     return;
@@ -64,7 +64,7 @@ const run = async () => {
     convertDirectoriesToArray(copyDirectories).forEach((dir, index) => {
       let output = {};
       const directory = dir.path;
-      fs.readdir(directory, (err: any, files: any[]) => {
+      fs.readdir(directory, (err: string, files: string[]) => {
         if (err) {
           logger.error(
             `Sorry! Couldn't read files from ${directory}, make sure that you have specified the path correctly in config`

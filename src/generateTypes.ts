@@ -12,11 +12,11 @@ export const generateTypes = (outputDir: string, copyObject: Object) => {
     .join(' | ');
 
   const content = `export type CopyKeys = ${keyPaths}`;
-  fs.writeFile(typesFile, content, 'utf8', (error: any) => {
+  fs.writeFile(typesFile, content, 'utf8', (error: string) => {
     if (error) return logger.error(error);
     const text = fs.readFileSync(typesFile, 'utf8');
     const formatted = prettier.format(text, { parser: 'typescript' });
-    fs.writeFile(typesFile, formatted, 'utf8', (error: any) => {
+    fs.writeFile(typesFile, formatted, 'utf8', (error: string) => {
       if (error) return logger.error(`Error formatting ${error}`);
       logger.success(`Succesfully written types to ${typesFile}`);
     });
