@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import logger from './logMessages';
 import { generateTypes } from './generateTypes';
+import { convertDirectoriesToArray, generateFileName } from './utils';
 
 const yaml = require('js-yaml');
 const fs = require('fs');
@@ -28,22 +29,18 @@ fs.access(configPath, fs.F_OK, (err: any) => {
 });
 
 const writeFile = async (
-  dir: any,
+  dir: string,
   file: string,
   content: string,
   exportTS = false
 ) => {
   await mkdirp(dir);
   const fileExt = exportTS ? `ts` : `js`;
-  const fileName = `${dir}/${file}.${fileExt}`;
+  const fileName = generateFileName(dir, file, fileExt);
 
   fs.writeFileSync(fileName, content);
   logger.success(`Succesfully written copy object to ${fileName}`);
 };
-
-const convertDirectoriesToArray = (
-  data: { [s: string]: unknown } | ArrayLike<unknown>
-) => Object.entries(data).map(([key, value]) => ({ file: key, path: value }));
 
 const run = async () => {
   const configObj = yaml.safeLoad(fs.readFileSync(configPath, 'utf8'));
