@@ -3,11 +3,11 @@ import logger from './logMessages';
 import { generateTypes } from './generateTypes';
 import { convertDirectoriesToArray, generateFileName } from './utils';
 
-const yaml = require('js-yaml');
-const fs = require('fs');
-const yargs = require('yargs');
-const path = require('path');
-const mkdirp = require('mkdirp');
+import yaml from 'js-yaml';
+import fs from 'fs';
+import yargs from 'yargs';
+import path from 'path';
+import mkdirp from 'mkdirp';
 
 const rootDir = path.resolve('.');
 
@@ -20,7 +20,7 @@ const options = yargs.usage('Usage: -c <config>').option('c', {
 
 const configPath = `${rootDir}/${options.config}`;
 
-fs.access(configPath, fs.F_OK, (err: string) => {
+fs.access(configPath, fs.constants.F_OK, err => {
   if (err) {
     logger.error(`Config file does not exist at ${configPath}`);
     return;
@@ -34,7 +34,9 @@ const writeFile = async (
   content: string,
   exportTS = false
 ) => {
-  await mkdirp(dir);
+  await mkdirp(dir, err => {
+    if (err) logger.error(err.name);
+  });
   const fileExt = exportTS ? `ts` : `js`;
   const fileName = generateFileName(dir, file, fileExt);
 
@@ -64,7 +66,7 @@ const run = async () => {
     convertDirectoriesToArray(copyDirectories).forEach((dir, index) => {
       let output = {};
       const directory = dir.path;
-      fs.readdir(directory, (err: string, files: string[]) => {
+      fs.readdir(directory, (err, files: string[]) => {
         if (err) {
           logger.error(
             `Sorry! Couldn't read files from ${directory}, make sure that you have specified the path correctly in config`
