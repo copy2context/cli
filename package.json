@@ -51,7 +51,7 @@
     "@types/flat": "0.0.28",
     "@types/js-yaml": "^3.12.1",
     "@types/prettier": "^1.19.0",
-    "flat": "^5.0.0",
+    "flat": "^5.0.1",
     "js-yaml": "^3.13.1",
     "mkdirp": "~0.5.1",
     "yargs": "^14.2.0"
